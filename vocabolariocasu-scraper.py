@@ -1,20 +1,15 @@
 # from selenium import webdriver
 from bs4 import BeautifulSoup
 import requests
-
-
-class Definition():
-    """
-    Single dictionary word with definition and examples
-    """
-    word : str
-    definition: str
-    examples: list
+import Definition
 
 
 def getCenter(URL: str):
+    """
+    return the div with the "center" class
+    """
     # Make request
-    page = requests.get(WEBPAGE_BASE)
+    page = requests.get(URL)
     soup = BeautifulSoup(page.content, 'html.parser')
     # Explore all the items to find the letters links
     html = list(soup.children)[2]
@@ -44,7 +39,7 @@ def getWords(WEBPAGE_BASE: str, LetterLink: str):
     lemmi = list(center.children)[3]
     links = {}
     for word in lemmi.findAll('a'):
-        links[word.text] = letter.get('href')
+        links[word.text] = word.get('href')
     return links
 
 
@@ -66,8 +61,14 @@ WEBPAGE_BASE = "http://vocabolariocasu.isresardegna.it"
 lettersLinks = getLettersLinks(WEBPAGE_BASE)
 
 # For every letter
+numberOfLetters = len(lettersLinks)
+lettersIndex = 1
 for letter in lettersLinks:
+    print("[" + str(lettersIndex) + "/" + str(numberOfLetters) +
+          "] Working on letter " + letter)
+    lettersIndex += 1
     words = getWords(WEBPAGE_BASE, lettersLinks[letter])
     for word in words:
-        definition = getDefinition(WEBPAGE_BASE, words[word])
-        print(definition.word)
+        print(word)
+        # definition = getDefinition(WEBPAGE_BASE, words[word])
+        # print(definition.word)
