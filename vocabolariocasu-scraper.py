@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 
 
-def getLetters(WEBPAGE_BASE: str):
+def getLettersLinks(WEBPAGE_BASE: str):
     """
     Find all the letters links in the page
     """
@@ -17,13 +17,14 @@ def getLetters(WEBPAGE_BASE: str):
     content = list(container.children)[1]
     center = list(content.children)[3]
     ricerca = list(center.children)[1]
-    return ricerca.findAll('a')
+    links = []
+    for letter in ricerca.findAll('a'):
+        links.append(WEBPAGE_BASE + letter.get('href'))
+    return links
 
 
 # Website base URL
-WEBPAGE_BASE = "http://vocabolariocasu.isresardegna.it/"
+WEBPAGE_BASE = "http://vocabolariocasu.isresardegna.it"
 
-letters = getLetters(WEBPAGE_BASE)
-# Print all the letters
-for letter in letters:
-    print(letter)
+lettersLinks = getLettersLinks(WEBPAGE_BASE)
+
