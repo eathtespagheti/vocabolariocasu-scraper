@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import Definition
 
 
 def getCenter(URL: str):
@@ -48,6 +49,6 @@ def getDefinition(WEBPAGE_BASE: str, WordLink: str):
     center = getCenter(WEBPAGE_BASE + WordLink)
     lemmi = list(center.children)[5]
     testo = list(center.children)[3]
-    word = WordLink()
+    word = Definition()
     word.word = testo.find('strong').text
     return word
