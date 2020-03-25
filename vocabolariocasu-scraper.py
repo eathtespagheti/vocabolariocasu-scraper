@@ -1,4 +1,3 @@
-import Definition
 from getRequests import *
 from printingFunctions import *
 
@@ -18,5 +17,6 @@ for i, letter in enumerate(lettersLinks, start=1):
         printTab(1)
         printPercentage(j, numberOfWords)
         print("Working on word " + word)
-    # definition = getDefinition(WEBPAGE_BASE, words[word])
-    # print(definition.word)
+        definition = getDefinition(WEBPAGE_BASE, words[word])
+        printTab(2)
+        definition.print()
