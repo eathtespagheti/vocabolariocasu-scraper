@@ -1,6 +1,5 @@
-from bs4 import BeautifulSoup
+from Definition import *
 import requests
-import Definition
 
 
 def getCenter(URL: str):
@@ -47,8 +46,9 @@ def getDefinition(WEBPAGE_BASE: str, WordLink: str):
     Find all the definitions which starts with a certain letter
     """
     center = getCenter(WEBPAGE_BASE + WordLink)
-    lemmi = list(center.children)[5]
-    testo = list(center.children)[3]
+    definizioni = list(center.children)[5]
+    testo = list(definizioni.children)[2]
     word = Definition()
-    word.word = testo.find('strong').text
+    word.raw = testo
+    word.parseWord()
     return word
