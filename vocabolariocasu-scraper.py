@@ -29,13 +29,11 @@ print("Downloading all the words' definitions' links")
 lettersLinks = getLettersLinks(WEBPAGE_BASE)
 numberOfLetters = len(lettersLinks)
 for i, letter in enumerate(lettersLinks, start=1):
+    timerStart = perf_counter()
     printProgress(i, numberOfLetters)
     print("Downloading links for letter " + letter, end=' ')
     # Parse all the words from page
-    timerStart = perf_counter()
     words = getWords(WEBPAGE_BASE, lettersLinks[letter])
-    timerStop = perf_counter()
-    elapsedTime = int((timerStop - timerStart) * 1000)
     # Save words to a json file
     jsonpath = saveDictToJSON(words, "__words", path.join(OUT_FOLDER, letter))
     # Add jsonpath to list
@@ -44,6 +42,8 @@ for i, letter in enumerate(lettersLinks, start=1):
     wordsNumber = len(words)
     numberOfDefinitions += wordsNumber
     # Time verbose
+    timerStop = perf_counter()
+    elapsedTime = int((timerStop - timerStart) * 1000)
     print(str(wordsNumber) + " links found, for a total of " +
           str(numberOfDefinitions) + ". Elapsed time " + str(elapsedTime) + "ms")
     addToList(timeRecords, elapsedTime, TIME_VALUES_FOR_CHECK)
@@ -57,28 +57,28 @@ for i, letter in enumerate(lettersLinks, start=1):
 del lettersLinks
 gc.collect()
 
-
-# # For every letter
-# numberOfLetters = len(lettersLinks)
-# for i, letter in enumerate(lettersLinks, start=1):
-#     # Verbose
-#     printProgress(i, numberOfLetters)
-#     print("Working on letter " + letter)
-#     # Parse all the words from page
-#     words = getWords(WEBPAGE_BASE, lettersLinks[letter])
-#     # Array of definitions
-#     definitions = []
-#     # Dict with the definitions associated to the letter
-#     wordsDict = {str(letter): definitions}
-#     dictionary.append(definitions)
-#     # Number of words
-#     numberOfWords = len(words)
-#     for j, word in enumerate(words, start=1):
-#         # Verbose
-#         printTab(1)
-#         printProgress(j, numberOfWords)
-#         print("Working on word " + word)
-#         # Get definition
-#         definition = getDefinition(WEBPAGE_BASE, words[word])
-#         definitions.append(definition)
-#         definition.print()
+print("\nDownloading definitions")
+# For every letter
+for i, letter in enumerate(jsonWordsReference, start=1):
+    # Parse all the words from json
+    words = getDictFromJSON(letter)
+    # Array of definitions
+    definitions = []
+    # Dict with the definitions associated to the letter
+    wordsDict = {str(letter): definitions}
+    # Number of words
+    numberOfWords = len(words)
+    for j, word in enumerate(words, start=1):
+        timerStart = perf_counter()
+        # Verbose
+        printProgress(i + j, numberOfDefinitions, True)
+        print("Working on word " + word)
+        # Get definition
+        definition = getDefinition(WEBPAGE_BASE, words[word])
+        definitions.append(definition)
+        # Time remaining
+        timerStop = perf_counter()
+        elapsedTime = int((timerStop - timerStart) * 1000)
+        printTab(1)
+        addToList(timeRecords, elapsedTime, TIME_VALUES_FOR_CHECK)
+        printRemainingTime(timeRecords, numberOfDefinitions - (i + j))
