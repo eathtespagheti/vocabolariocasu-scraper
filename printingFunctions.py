@@ -15,3 +15,33 @@ def printProgress(index: int, total: int, printPercentage: bool = False):
         percentageValue = "{0:.2f}".format(percentageValue)
         print(percentageValue + "%", end=' ')
     print("[" + str(index) + "/" + str(total) + "]", end=' ')
+
+
+def printRemainingTime(values: list, remainingItems: int):
+    """
+    Print the remaining time based on the medium elapsed time
+    """
+    total = 0
+    for value in values:
+        total += value
+
+    timeUnits = ['ms', 's', 'm', 'h']
+
+    mediumTime = (total / len(values)) / 1000
+    unit = 1
+    remainingTime = mediumTime * remainingItems
+
+    # Convert in milliseconds
+    if remainingTime < 0:
+        remainingTime *= 1000
+        unit = 0
+    # Convert in minutes
+    if remainingTime > 60:
+        remainingTime /= 60
+        unit = 2
+    # Convert in hours
+    if remainingTime > 3600:
+        remainingTime /= 60
+        unit = 3
+
+    print("Remaining time about " + str(int(remainingTime)) + timeUnits[unit])
