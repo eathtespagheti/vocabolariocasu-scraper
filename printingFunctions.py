@@ -25,7 +25,7 @@ def printRemainingTime(values: list, remainingItems: int):
     for value in values:
         total += value
 
-    timeUnits = ['ms', 's', 'm', 'h']
+    timeUnits = ['ms', 's', 'm', 'h', ' days']
 
     mediumTime = (total / len(values)) / 1000
     unit = 1
@@ -40,8 +40,12 @@ def printRemainingTime(values: list, remainingItems: int):
         remainingTime /= 60
         unit = 2
     # Convert in hours
-    if remainingTime > 3600:
+    if remainingTime > 60:
         remainingTime /= 60
-        unit = 3
+        unit += 1
+    # Convert in days
+    if remainingTime > 24:
+        remainingTime /= 24
+        unit += 1
 
     print("Remaining time about " + str(int(remainingTime)) + timeUnits[unit])
