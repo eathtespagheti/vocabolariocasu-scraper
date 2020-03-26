@@ -2,11 +2,24 @@ from getRequests import *
 from printingFunctions import *
 from fileIO import *
 import gc
+from time import perf_counter
 
+
+def addToList(dataset: list, value: int, valuesLimit: int):
+    """
+    Safely add time values to elapsed time list
+    """
+    if len(dataset) >= valuesLimit:
+        dataset.pop(0)
+    dataset.append(value)
+
+
+TIME_VALUES_FOR_CHECK = 50
 # Website base URL
 WEBPAGE_BASE = "http://vocabolariocasu.isresardegna.it"
 OUT_FOLDER = "output"
 
+timeRecords = []
 jsonWordsReference = []
 numberOfDefinitions = 0
 processedDefinitions = 0
@@ -19,7 +32,10 @@ for i, letter in enumerate(lettersLinks, start=1):
     printProgress(i, numberOfLetters)
     print("Downloading links for letter " + letter, end=' ')
     # Parse all the words from page
+    timerStart = perf_counter()
     words = getWords(WEBPAGE_BASE, lettersLinks[letter])
+    timerStop = perf_counter()
+    elapsedTime = int((timerStop - timerStart) * 1000)
     # Save words to a json file
     jsonpath = saveDictToJSON(words, "__words", path.join(OUT_FOLDER, letter))
     # Add jsonpath to list
@@ -27,8 +43,13 @@ for i, letter in enumerate(lettersLinks, start=1):
     # Update number of definitions
     wordsNumber = len(words)
     numberOfDefinitions += wordsNumber
+    # Time verbose
     print(str(wordsNumber) + " links found, for a total of " +
-          str(numberOfDefinitions))
+          str(numberOfDefinitions) + ". Elapsed time " + str(elapsedTime) + "ms")
+    addToList(timeRecords, elapsedTime, TIME_VALUES_FOR_CHECK)
+    printTab(1)
+    print('   ', end='')  # Just because OCD
+    printRemainingTime(timeRecords, numberOfLetters - i)
     # Free memory
     del words
     gc.collect()
