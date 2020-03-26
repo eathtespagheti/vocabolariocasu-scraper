@@ -6,11 +6,12 @@ def printTab(numberOfTabs: int):
         print('    ', end='')
 
 
-def printPercentage(index: int, total: int):
+def printProgress(index: int, total: int, printPercentage: bool = False):
     """
     Draw a simple progress value in the stdout
     """
-    percentageValue = (100 * index) / total
-    percentageValue = "{0:.2f}".format(percentageValue)
-    print(percentageValue + "% [" + str(index) +
-          "/" + str(total) + "]", end=' ')
+    if printPercentage:
+        percentageValue = (100 * index) / total
+        percentageValue = "{0:.2f}".format(percentageValue)
+        print(percentageValue + "%", end=' ')
+    print("[" + str(index) + "/" + str(total) + "]", end=' ')
