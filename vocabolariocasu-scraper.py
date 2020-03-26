@@ -17,7 +17,7 @@ lettersLinks = getLettersLinks(WEBPAGE_BASE)
 numberOfLetters = len(lettersLinks)
 for i, letter in enumerate(lettersLinks, start=1):
     printProgress(i, numberOfLetters)
-    print("Downloading links for letter " + letter, )
+    print("Downloading links for letter " + letter, end=' ')
     # Parse all the words from page
     words = getWords(WEBPAGE_BASE, lettersLinks[letter])
     # Save words to a json file
@@ -25,7 +25,10 @@ for i, letter in enumerate(lettersLinks, start=1):
     # Add jsonpath to list
     jsonWordsReference.append(jsonpath)
     # Update number of definitions
-    numberOfDefinitions += len(words)
+    wordsNumber = len(words)
+    numberOfDefinitions += wordsNumber
+    print(str(wordsNumber) + " links found, for a total of " +
+          str(numberOfDefinitions))
     # Free memory
     del words
     gc.collect()
