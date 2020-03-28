@@ -5,32 +5,64 @@ class timeManager:
     """
     Manage time in the script
     """
-    startTime: dt.datetime
-    timeElapsed: dt.timedelta
-    lastTime: dt.datetime
+    start: dt.datetime
+    last: dt.datetime
+    elapsed: dt.timedelta
+    records: list
+    maxRecords: int
+    __totalRecords__: dt.timedelta
 
-    def start(self):
+    def __init__(self, maxRecords: int = 100):
         """
         Set the starting time for the timeManager
         """
-        self.startTime = dt.datetime.now()
-        self.lastTime = self.startTime
-        self.timeElapsed = self.lastTime - self.startTime
+        self.records = []
+        self.maxRecords = maxRecords
+        self.start = dt.datetime.now()
+        self.last = self.start
+        self.records.append(self.last - self.start)
+        self.elapsed = self.last - self.start
+        self.__totalRecords__ = self.elapsed
+
+    def __adjustRecords__(self):
+        """
+        Clean the first element of the list if needed and adjust elapsed time
+        """
+        if len(self.records) >= self.maxRecords:
+            tmp = self.records.pop(0)
+            self.__totalRecords__ -= tmp
 
     def updateElapsedTime(self):
         """
         Update the elapsed time
         """
-        tmpTime = dt.datetime.now()
-        self.timeElapsed += (tmpTime - self.lastTime)
-        self.lastTime = tmpTime
-        return self.timeElapsed
+        self.__adjustRecords__()
+        tmp = dt.datetime.now()
+        timeElapsed = tmp - self.last
+        self.last = tmp
+
+        self.elapsed += (timeElapsed)
+        self.records.append(timeElapsed)
+        self.__totalRecords__ += timeElapsed
+        return self.elapsed
 
     def printTime(self):
         """
         Print start time and how much time is elapsed
         """
         print("Started at", end=' ')
-        print(self.startTime, end=' ')
-        print("Time elapsed", end=' ')
-        print(self.timeElapsed)
+        print(self.start, end=' ')
+        print("- Time elapsed", end=' ')
+        print(self.elapsed)
+
+    def updateAndPrint(self):
+        self.updateElapsedTime()
+        self.printTime()
+
+    def printRemainingTime(self, remainingItems: int):
+        """
+        Print the remaining time based on the medium elapsed time
+        """
+        mediumTime = (self.__totalRecords__ / len(self.records))
+        remainingTime = mediumTime * remainingItems
+        print("Remaining time about " + str(remainingTime))
