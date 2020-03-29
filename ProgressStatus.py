@@ -13,8 +13,8 @@ class ProgressStatus:
     numberOfDefinitions: int
     # Progress
     processedDefinitions: int
-    lastWordSource: str
-    lastWordProcessed: str
+    lastWordSourceIndex: str
+    lastWordProcessedIndex: str
     # Save location informations
     filename: str
     saveFolder: str
@@ -28,8 +28,8 @@ class ProgressStatus:
         self.processedDefinitions = 0
         self.saveFolder = saveFolder
         self.filename = filename
-        self.lastWordSource = ""
-        self.lastWordProcessed = ""
+        self.lastWordSourceIndex = 0
+        self.lastWordProcessedIndex = -1
         self.__linksSubname__ = "links"
         self.__progressSubname__ = "progress"
 
@@ -55,8 +55,8 @@ class ProgressStatus:
         """
         data = {
             "processedDefinitions": self.processedDefinitions,
-            "lastWordSource": self.lastWordSource,
-            "lastWordProcessed": self.lastWordProcessed
+            "lastWordSourceIndex": self.lastWordSourceIndex,
+            "lastWordProcessedIndex": self.lastWordProcessedIndex
         }
         return data
 
@@ -97,8 +97,8 @@ class ProgressStatus:
         data = getDictFromJSON(self.__getFilename__(
             self.__progressSubname__), self.saveFolder)
         self.processedDefinitions = data.get("processedDefinitions")
-        self.lastWordSource = data.get("lastWordSource")
-        self.lastWordProcessed = data.get("lastWordProcessed")
+        self.lastWordSourceIndex = data.get("lastWordSourceIndex")
+        self.lastWordProcessedIndex = data.get("lastWordProcessedIndex")
 
     def load(self):
         """

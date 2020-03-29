@@ -42,13 +42,21 @@ def getDownloadLinks(WEBPAGE_BASE: str, OUT_FOLDER: str, status: ProgressStatus)
     gc.collect()
 
 
-def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus):
+def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus, startFromLastIndex: bool = False):
     """
     Download and save all the words definitions
     """
     print("Downloading definitions")
+
+    # Adjust start set
+    if startFromLastIndex:
+        lettersDataset = itertools.islice(
+            status.jsonWordsReference, status.lastWordSourceIndex, None)
+    else:
+        lettersDataset = status.jsonWordsReference
+
     # For every letter
-    for i, letter in enumerate(status.jsonWordsReference):
+    for i, letter in enumerate(lettersDataset):
         # Parse all the words from json
         words = getDictFromJSON(letter)
         # Array of definitions
@@ -58,17 +66,26 @@ def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus):
         # Number of words
         numberOfWords = len(words)
         # Update status variable
-        status.lastWordSource = str(letter)
-        for j, word in enumerate(words, start=1):
+        status.lastWordSourceIndex = i
+        # Adjust start set
+        slicedItems = 0
+        if startFromLastIndex:
+            wordsDataset = itertools.islice(
+                words, status.lastWordProcessedIndex + 1, None)
+            startFromLastIndex = False
+            slicedItems = status.lastWordProcessedIndex + 1
+        else:
+            wordsDataset = words
+        for j, word in enumerate(wordsDataset):
             # Verbose
-            processedItems = i + j
+            processedItems = status.processedDefinitions + 1
             printProgress(processedItems, status.numberOfDefinitions, True)
             print("Working on word " + word)
             # Get definition
             definition = getDefinition(WEBPAGE_BASE, words[word])
             definitions.append(definition)
             # Update status variable
-            status.lastWordProcessed = word
+            status.lastWordProcessedIndex = j + slicedItems
             status.processedDefinitions = processedItems
             status.saveProgress()
             # Time remaining
@@ -105,4 +122,4 @@ else:
     getDownloadLinks(WEBPAGE_BASE, OUT_FOLDER, status)
 
 print("")
-downloadDefinitions(WEBPAGE_BASE, status)
+downloadDefinitions(WEBPAGE_BASE, status, load)
