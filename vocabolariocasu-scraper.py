@@ -3,47 +3,68 @@ from getRequests import *
 from printingFunctions import *
 from fileIO import *
 import gc
+from shutil import rmtree
 
 
-TIME_VALUES_FOR_CHECK = 50
-# Website base URL
+def getDownloadLinks(WEBPAGE_BASE: str, OUT_FOLDER: str, status: ProgressStatus):
+    # Get all the links and words
+    print("Downloading all the words' definitions' links")
+    lettersLinks = getLettersLinks(WEBPAGE_BASE)
+    numberOfLetters = len(lettersLinks)
+    for i, letter in enumerate(lettersLinks, start=1):
+        printProgress(i, numberOfLetters)
+        print("Downloading links for letter " + letter)
+        # Parse all the words from page
+        words = getWords(WEBPAGE_BASE, lettersLinks[letter])
+        # Save words to a json file
+        jsonpath = saveDictToJSON(words, "__words.json",
+                                  path.join(OUT_FOLDER, letter))
+        # Add jsonpath to list
+        status.jsonWordsReference.append(jsonpath)
+        # Update number of definitions
+        wordsNumber = len(words)
+        status.numberOfDefinitions += wordsNumber
+        # Time verbose
+        printTab(1)
+        print('   ', end='')  # Just because OCD
+        status.time.updateAndPrint()
+        printTab(1)
+        print('   ', end='')  # Just because OCD
+        status.time.printRemainingTime(numberOfLetters - i)
+        del words
+        gc.collect()
+    # Free memory again
+    del lettersLinks
+    status.save()
+    gc.collect()
+
+
+# VARIABLES
 WEBPAGE_BASE = "http://vocabolariocasu.isresardegna.it"
 OUT_FOLDER = "output"
 
 status = ProgressStatus(OUT_FOLDER)  # Progress variables
+load = False
+if status.checkSaved():
+    answer = None
+    while answer not in ("Y", "y", "", "no"):
+        answer = input(
+            "A previous run data has been found, do you want to load it? [Y/n]: ")
+        if answer == "Y" or answer == "y" or answer == "":
+            load = True
+        elif answer == "n":
+            load = False
+            rmtree(OUT_FOLDER)
+            break
+        else:
+            print("Please enter y or n.")
+            answer = None
+print("")
+if load:
+    status.load()
+else:
+    getDownloadLinks(WEBPAGE_BASE, OUT_FOLDER, status)
 
-# Get all the links and words
-print("Downloading all the words' definitions' links")
-lettersLinks = getLettersLinks(WEBPAGE_BASE)
-numberOfLetters = len(lettersLinks)
-for i, letter in enumerate(lettersLinks, start=1):
-    printProgress(i, numberOfLetters)
-    print("Downloading links for letter " + letter)
-    # Parse all the words from page
-    words = getWords(WEBPAGE_BASE, lettersLinks[letter])
-    # Save words to a json file
-    jsonpath = saveDictToJSON(words, "__words.json",
-                              path.join(OUT_FOLDER, letter))
-    # Add jsonpath to list
-    status.jsonWordsReference.append(jsonpath)
-    # Update number of definitions
-    wordsNumber = len(words)
-    status.numberOfDefinitions += wordsNumber
-    # Time verbose
-    printTab(1)
-    print('   ', end='')  # Just because OCD
-    status.time.updateAndPrint()
-    printTab(1)
-    print('   ', end='')  # Just because OCD
-    status.time.printRemainingTime(numberOfLetters - i)
-    del words
-    gc.collect()
-# Free memory again
-del lettersLinks
-status.save()
-gc.collect()
-
-status.load()
 
 print("\nDownloading definitions")
 # For every letter

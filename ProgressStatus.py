@@ -1,5 +1,5 @@
 from TimeManagment import TimeManager
-from fileIO import saveDictToJSON, getDictFromJSON
+from fileIO import saveDictToJSON, getDictFromJSON, checkIfPathExist
 
 
 class ProgressStatus:
@@ -11,13 +11,15 @@ class ProgressStatus:
     numberOfDefinitions: int
     processedDefinitions: int
     saveFolder: str
+    filename: str
 
-    def __init__(self, saveFolder: str = ""):
+    def __init__(self, saveFolder: str = "", filename: str = "status.json"):
         self.time = TimeManager()
         self.jsonWordsReference = []
         self.numberOfDefinitions = 0
         self.processedDefinitions = 0
         self.saveFolder = saveFolder
+        self.filename = filename
 
     def __toDict__(self):
         """
@@ -30,17 +32,23 @@ class ProgressStatus:
         }
         return data
 
-    def save(self, filename: str = "status.json"):
+    def save(self):
         """
         Save the class to a json file
         """
-        saveDictToJSON(self.__toDict__(), filename, self.saveFolder)
+        saveDictToJSON(self.__toDict__(), self.filename, self.saveFolder)
 
-    def load(self, filename: str = "status.json"):
+    def load(self):
         """
         Load the status istance from a json file
         """
-        data = getDictFromJSON(filename, self.saveFolder)
+        data = getDictFromJSON(self.filename, self.saveFolder)
         self.jsonWordsReference = data.get("jsonWordsReference")
         self.numberOfDefinitions = data.get("numberOfDefinitions")
         self.processedDefinitions = data.get("processedDefinitions")
+
+    def checkSaved(self):
+        """
+        Check if there's a saved istance of ProgressStatus
+        """
+        return checkIfPathExist(self.filename, self.saveFolder)

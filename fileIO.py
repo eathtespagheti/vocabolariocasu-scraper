@@ -32,3 +32,14 @@ def getDictFromJSON(Filename: str, Directory: str = ""):
 
     with open(FilePath, "r") as input:
         return json.load(input)
+
+
+def checkIfPathExist(Filename: str, Directory: str = ""):
+    """
+    Check if a file or a directory exist
+    """
+    if Directory == "":
+        FilePath = Filename
+    else:
+        FilePath = path.join(Directory, Filename)
+    return path.exists(FilePath)
