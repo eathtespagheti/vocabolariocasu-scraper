@@ -14,7 +14,6 @@ def saveDictToJSON(Dict: dict, Filename: str, Directory: str):
     """
     Save a dictionary to a JSON file
     """
-    Filename += ".json"
     outputPath = path.join(Directory, Filename)
     createDirectory(Directory)
     with open(outputPath, "w") as out:
@@ -22,9 +21,14 @@ def saveDictToJSON(Dict: dict, Filename: str, Directory: str):
     return outputPath
 
 
-def getDictFromJSON(FilePath: str):
+def getDictFromJSON(Filename: str, Directory: str = ""):
     """
     Parse a Dict from a JSON
     """
+    if Directory == "":
+        FilePath = Filename
+    else:
+        FilePath = path.join(Directory, Filename)
+
     with open(FilePath, "r") as input:
         return json.load(input)

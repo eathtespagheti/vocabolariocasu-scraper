@@ -10,7 +10,7 @@ TIME_VALUES_FOR_CHECK = 50
 WEBPAGE_BASE = "http://vocabolariocasu.isresardegna.it"
 OUT_FOLDER = "output"
 
-status = ProgressStatus()  # Progress variables
+status = ProgressStatus(OUT_FOLDER)  # Progress variables
 
 # Get all the links and words
 print("Downloading all the words' definitions' links")
@@ -22,7 +22,8 @@ for i, letter in enumerate(lettersLinks, start=1):
     # Parse all the words from page
     words = getWords(WEBPAGE_BASE, lettersLinks[letter])
     # Save words to a json file
-    jsonpath = saveDictToJSON(words, "__words", path.join(OUT_FOLDER, letter))
+    jsonpath = saveDictToJSON(words, "__words.json",
+                              path.join(OUT_FOLDER, letter))
     # Add jsonpath to list
     status.jsonWordsReference.append(jsonpath)
     # Update number of definitions
@@ -39,7 +40,10 @@ for i, letter in enumerate(lettersLinks, start=1):
     gc.collect()
 # Free memory again
 del lettersLinks
+status.save()
 gc.collect()
+
+status.load()
 
 print("\nDownloading definitions")
 # For every letter
@@ -52,7 +56,7 @@ for i, letter in enumerate(status.jsonWordsReference, start=1):
     wordsDict = {str(letter): definitions}
     # Number of words
     numberOfWords = len(words)
-    for j, word in enumerate(words, start=1):
+    for j, word in enumerate(words):
         # Verbose
         printProgress(i + j, status.numberOfDefinitions, True)
         print("Working on word " + word)
