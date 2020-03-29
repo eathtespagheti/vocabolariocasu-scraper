@@ -1,7 +1,7 @@
+from ProgressStatus import ProgressStatus
 from getRequests import *
 from printingFunctions import *
 from fileIO import *
-from timeManagment import *
 import gc
 
 
@@ -10,11 +10,7 @@ TIME_VALUES_FOR_CHECK = 50
 WEBPAGE_BASE = "http://vocabolariocasu.isresardegna.it"
 OUT_FOLDER = "output"
 
-time = timeManager()
-
-jsonWordsReference = []
-numberOfDefinitions = 0
-processedDefinitions = 0
+status = ProgressStatus()  # Progress variables
 
 # Get all the links and words
 print("Downloading all the words' definitions' links")
@@ -28,17 +24,17 @@ for i, letter in enumerate(lettersLinks, start=1):
     # Save words to a json file
     jsonpath = saveDictToJSON(words, "__words", path.join(OUT_FOLDER, letter))
     # Add jsonpath to list
-    jsonWordsReference.append(jsonpath)
+    status.jsonWordsReference.append(jsonpath)
     # Update number of definitions
     wordsNumber = len(words)
-    numberOfDefinitions += wordsNumber
+    status.numberOfDefinitions += wordsNumber
     # Time verbose
     printTab(1)
     print('   ', end='')  # Just because OCD
-    time.updateAndPrint()
+    status.time.updateAndPrint()
     printTab(1)
     print('   ', end='')  # Just because OCD
-    time.printRemainingTime(numberOfLetters - i)
+    status.time.printRemainingTime(numberOfLetters - i)
     del words
     gc.collect()
 # Free memory again
@@ -47,7 +43,7 @@ gc.collect()
 
 print("\nDownloading definitions")
 # For every letter
-for i, letter in enumerate(jsonWordsReference, start=1):
+for i, letter in enumerate(status.jsonWordsReference, start=1):
     # Parse all the words from json
     words = getDictFromJSON(letter)
     # Array of definitions
@@ -58,13 +54,13 @@ for i, letter in enumerate(jsonWordsReference, start=1):
     numberOfWords = len(words)
     for j, word in enumerate(words, start=1):
         # Verbose
-        printProgress(i + j, numberOfDefinitions, True)
+        printProgress(i + j, status.numberOfDefinitions, True)
         print("Working on word " + word)
         # Get definition
         definition = getDefinition(WEBPAGE_BASE, words[word])
         definitions.append(definition)
         # Time remaining
         printTab(1)
-        time.updateAndPrint()
+        status.time.updateAndPrint()
         printTab(1)
-        time.printRemainingTime(numberOfDefinitions - (i + j))
+        status.time.printRemainingTime(status.numberOfDefinitions - (i + j))

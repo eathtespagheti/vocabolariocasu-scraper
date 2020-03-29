@@ -1,7 +1,7 @@
 import datetime as dt
 
 
-class timeManager:
+class TimeManager:
     """
     Manage time in the script
     """
