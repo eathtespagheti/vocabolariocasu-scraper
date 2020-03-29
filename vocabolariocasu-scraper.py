@@ -28,11 +28,7 @@ def getDownloadLinks(WEBPAGE_BASE: str, OUT_FOLDER: str, status: ProgressStatus)
         wordsNumber = len(words)
         status.numberOfDefinitions += wordsNumber
         # Time verbose
-        printTab(1)
-        print('   ', end='')  # Just because OCD
         status.time.updateAndPrint()
-        printTab(1)
-        print('   ', end='')  # Just because OCD
         status.time.printRemainingTime(numberOfLetters - i)
         del words
         gc.collect()
@@ -88,9 +84,7 @@ def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus, startFromLast
             status.processedDefinitions = processedItems
             status.saveProgress()
             # Time remaining
-            printTab(1)
             status.time.updateAndPrint()
-            printTab(1)
             status.time.printRemainingTime(status.remainingItems())
             # Garbage collector
             gc.collect()

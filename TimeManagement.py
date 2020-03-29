@@ -1,4 +1,5 @@
 import datetime as dt
+from printingFunctions import printTab
 
 
 class TimeManager:
@@ -40,29 +41,31 @@ class TimeManager:
         tmp = dt.datetime.now()
         timeElapsed = tmp - self.last
         self.last = tmp
-
         self.elapsed += (timeElapsed)
         self.records.append(timeElapsed)
         self.__totalRecords__ += timeElapsed
         return self.elapsed
 
-    def printTime(self):
+    def printTime(self, tabs: int = 1):
         """
         Print start time and how much time is elapsed
         """
+        printTab(tabs)
         print("Started at", end=' ')
         print(self.start)
+        printTab(tabs)
         print("Time elapsed", end=' ')
         print(self.elapsed)
 
-    def updateAndPrint(self):
+    def updateAndPrint(self, tabs: int = 1):
         self.updateElapsedTime()
-        self.printTime()
+        self.printTime(tabs)
 
-    def printRemainingTime(self, remainingItems: int):
+    def printRemainingTime(self, remainingItems: int, tabs: int = 1):
         """
         Print the remaining time based on the medium elapsed time
         """
         mediumTime = (self.__totalRecords__ / len(self.records))
         remainingTime = mediumTime * remainingItems
+        printTab(tabs)
         print("Remaining time about " + str(remainingTime))
