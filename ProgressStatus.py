@@ -1,4 +1,4 @@
-from TimeManagment import TimeManager
+from TimeManagement import TimeManager
 from fileIO import saveDictToJSON, getDictFromJSON, checkIfPathExist
 
 

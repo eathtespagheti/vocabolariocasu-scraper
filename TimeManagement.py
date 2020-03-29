@@ -12,7 +12,7 @@ class TimeManager:
     maxRecords: int
     __totalRecords__: dt.timedelta
 
-    def __init__(self, maxRecords: int = 100):
+    def __init__(self, maxRecords: int = 500):
         """
         Set the starting time for the timeManager
         """
