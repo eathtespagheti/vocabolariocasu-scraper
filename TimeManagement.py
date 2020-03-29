@@ -51,8 +51,8 @@ class TimeManager:
         Print start time and how much time is elapsed
         """
         print("Started at", end=' ')
-        print(self.start, end=' ')
-        print("- Time elapsed", end=' ')
+        print(self.start)
+        print("Time elapsed", end=' ')
         print(self.elapsed)
 
     def updateAndPrint(self):
