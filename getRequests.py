@@ -48,7 +48,6 @@ def getDefinition(WEBPAGE_BASE: str, WordLink: str):
     center = getCenter(WEBPAGE_BASE + WordLink)
     definizioni = list(center.children)[5]
     testo = list(definizioni.children)[2]
-    word = Definition()
-    word.raw = testo
-    word.parseWord()
+    word = Definition(testo)
+    word.parseDefinition()
     return word

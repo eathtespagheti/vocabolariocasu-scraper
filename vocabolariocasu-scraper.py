@@ -59,10 +59,6 @@ def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus, startFromLast
     for i, letter in enumerate(lettersDataset):
         # Parse all the words from json
         words = getDictFromJSON(letter)
-        # Array of definitions
-        definitions = []
-        # Dict with the definitions associated to the letter
-        wordsDict = {str(letter): definitions}
         # Number of words
         numberOfWords = len(words)
         # Update status variable
@@ -83,7 +79,10 @@ def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus, startFromLast
             print("Working on word " + word)
             # Get definition
             definition = getDefinition(WEBPAGE_BASE, words[word])
-            definitions.append(definition)
+            # Save definition
+            directory = getDirectoryPath(letter)
+            saveDictToJSON(definition.toDict(), word + ".json", directory)
+            del definition
             # Update status variable
             status.lastWordProcessedIndex = j + slicedItems
             status.processedDefinitions = processedItems
@@ -93,6 +92,8 @@ def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus, startFromLast
             status.time.updateAndPrint()
             printTab(1)
             status.time.printRemainingTime(status.remainingItems())
+            # Garbage collector
+            gc.collect()
 
 
 # VARIABLES

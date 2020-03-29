@@ -43,3 +43,10 @@ def checkIfPathExist(Filename: str, Directory: str = ""):
     else:
         FilePath = path.join(Directory, Filename)
     return path.exists(FilePath)
+
+
+def getDirectoryPath(filepath: str):
+    """
+    Get the directory path from a file path
+    """
+    return path.dirname(filepath)
