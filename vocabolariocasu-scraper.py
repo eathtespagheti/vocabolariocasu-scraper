@@ -38,7 +38,7 @@ def getDownloadLinks(WEBPAGE_BASE: str, OUT_FOLDER: str, status: ProgressStatus)
         gc.collect()
     # Free memory again
     del lettersLinks
-    status.save()
+    status.saveLinks()
     gc.collect()
 
 
@@ -70,7 +70,7 @@ def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus):
             # Update status variable
             status.lastWordProcessed = word
             status.processedDefinitions = processedItems
-            status.save()
+            status.saveProgress()
             # Time remaining
             printTab(1)
             status.time.updateAndPrint()

@@ -6,16 +6,22 @@ class ProgressStatus:
     """
     Class containing all the status variables for the script execution
     """
+    # Time
     time: TimeManager
+    # Links
     jsonWordsReference: list
     numberOfDefinitions: int
+    # Progress
     processedDefinitions: int
-    saveFolder: str
-    filename: str
     lastWordSource: str
     lastWordProcessed: str
+    # Save location informations
+    filename: str
+    saveFolder: str
+    __linksSubname__: str
+    __progressSubname__: str
 
-    def __init__(self, saveFolder: str = "", filename: str = "status.json"):
+    def __init__(self, saveFolder: str = "", filename: str = "status"):
         self.time = TimeManager()
         self.jsonWordsReference = []
         self.numberOfDefinitions = 0
@@ -24,42 +30,93 @@ class ProgressStatus:
         self.filename = filename
         self.lastWordSource = ""
         self.lastWordProcessed = ""
+        self.__linksSubname__ = "links"
+        self.__progressSubname__ = "progress"
 
-    def __toDict__(self):
+    def __getFilename__(self, dataType: str):
         """
-        Store and return the important class data to a dict
+        Return the composed filename for saving
+        """
+        return self.filename + "_" + dataType + ".json"
+
+    def __toDictLink__(self):
+        """
+        Store and return the links class data to a dict
         """
         data = {
             "jsonWordsReference": self.jsonWordsReference,
-            "numberOfDefinitions": self.numberOfDefinitions,
+            "numberOfDefinitions": self.numberOfDefinitions
+        }
+        return data
+
+    def __toDictProgress__(self):
+        """
+        Store and return the progress class data to a dict
+        """
+        data = {
             "processedDefinitions": self.processedDefinitions,
             "lastWordSource": self.lastWordSource,
             "lastWordProcessed": self.lastWordProcessed
         }
         return data
 
+    def saveLinks(self):
+        """
+        Save the links to the json file
+        """
+        saveDictToJSON(self.__toDictLink__(),
+                       self.__getFilename__(self.__linksSubname__), self.saveFolder)
+
+    def saveProgress(self):
+        """
+        Save the links to the json file
+        """
+        saveDictToJSON(self.__toDictProgress__(),
+                       self.__getFilename__(self.__progressSubname__), self.saveFolder)
+
     def save(self):
         """
-        Save the class to a json file
+        Save all the reusable data to json
         """
-        saveDictToJSON(self.__toDict__(), self.filename, self.saveFolder)
+        self.saveLinks()
+        self.saveProgress()
 
-    def load(self):
+    def loadLinks(self):
         """
-        Load the status istance from a json file
+        Load the links data from the json file
         """
-        data = getDictFromJSON(self.filename, self.saveFolder)
+        data = getDictFromJSON(self.__getFilename__(
+            self.__linksSubname__), self.saveFolder)
         self.jsonWordsReference = data.get("jsonWordsReference")
         self.numberOfDefinitions = data.get("numberOfDefinitions")
+
+    def loadProgress(self):
+        """
+        Load the progress data from the json file
+        """
+        data = getDictFromJSON(self.__getFilename__(
+            self.__progressSubname__), self.saveFolder)
         self.processedDefinitions = data.get("processedDefinitions")
         self.lastWordSource = data.get("lastWordSource")
         self.lastWordProcessed = data.get("lastWordProcessed")
+
+    def load(self):
+        """
+        Load all the data from the json files
+        """
+        if checkIfPathExist(self.__getFilename__(self.__linksSubname__), self.saveFolder):
+            self.loadLinks()
+        if checkIfPathExist(self.__getFilename__(self.__progressSubname__), self.saveFolder):
+            self.loadProgress()
 
     def checkSaved(self):
         """
         Check if there's a saved istance of ProgressStatus
         """
-        return checkIfPathExist(self.filename, self.saveFolder)
+        return checkIfPathExist(self.__getFilename__(self.__linksSubname__), self.saveFolder)
 
     def remainingItems(self):
+        """
+        Return the number of remaining items
+        """
         return self.numberOfDefinitions - self.processedDefinitions
