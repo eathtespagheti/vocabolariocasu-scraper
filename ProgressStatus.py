@@ -12,6 +12,8 @@ class ProgressStatus:
     processedDefinitions: int
     saveFolder: str
     filename: str
+    lastWordSource: str
+    lastWordProcessed: str
 
     def __init__(self, saveFolder: str = "", filename: str = "status.json"):
         self.time = TimeManager()
@@ -20,6 +22,8 @@ class ProgressStatus:
         self.processedDefinitions = 0
         self.saveFolder = saveFolder
         self.filename = filename
+        self.lastWordSource = ""
+        self.lastWordProcessed = ""
 
     def __toDict__(self):
         """
@@ -28,7 +32,9 @@ class ProgressStatus:
         data = {
             "jsonWordsReference": self.jsonWordsReference,
             "numberOfDefinitions": self.numberOfDefinitions,
-            "processedDefinitions": self.processedDefinitions
+            "processedDefinitions": self.processedDefinitions,
+            "lastWordSource": self.lastWordSource,
+            "lastWordProcessed": self.lastWordProcessed
         }
         return data
 
@@ -46,9 +52,14 @@ class ProgressStatus:
         self.jsonWordsReference = data.get("jsonWordsReference")
         self.numberOfDefinitions = data.get("numberOfDefinitions")
         self.processedDefinitions = data.get("processedDefinitions")
+        self.lastWordSource = data.get("lastWordSource")
+        self.lastWordProcessed = data.get("lastWordProcessed")
 
     def checkSaved(self):
         """
         Check if there's a saved istance of ProgressStatus
         """
         return checkIfPathExist(self.filename, self.saveFolder)
+
+    def remainingItems(self):
+        return self.numberOfDefinitions - self.processedDefinitions

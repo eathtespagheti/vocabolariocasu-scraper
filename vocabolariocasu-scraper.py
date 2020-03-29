@@ -2,12 +2,15 @@ from ProgressStatus import ProgressStatus
 from getRequests import *
 from printingFunctions import *
 from fileIO import *
-import gc
 from shutil import rmtree
+import gc
+import itertools
 
 
 def getDownloadLinks(WEBPAGE_BASE: str, OUT_FOLDER: str, status: ProgressStatus):
-    # Get all the links and words
+    """
+    Get definition link for every word and save all the data on json files
+    """
     print("Downloading all the words' definitions' links")
     lettersLinks = getLettersLinks(WEBPAGE_BASE)
     numberOfLetters = len(lettersLinks)
@@ -39,6 +42,42 @@ def getDownloadLinks(WEBPAGE_BASE: str, OUT_FOLDER: str, status: ProgressStatus)
     gc.collect()
 
 
+def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus):
+    """
+    Download and save all the words definitions
+    """
+    print("Downloading definitions")
+    # For every letter
+    for i, letter in enumerate(status.jsonWordsReference):
+        # Parse all the words from json
+        words = getDictFromJSON(letter)
+        # Array of definitions
+        definitions = []
+        # Dict with the definitions associated to the letter
+        wordsDict = {str(letter): definitions}
+        # Number of words
+        numberOfWords = len(words)
+        # Update status variable
+        status.lastWordSource = str(letter)
+        for j, word in enumerate(words, start=1):
+            # Verbose
+            processedItems = i + j
+            printProgress(processedItems, status.numberOfDefinitions, True)
+            print("Working on word " + word)
+            # Get definition
+            definition = getDefinition(WEBPAGE_BASE, words[word])
+            definitions.append(definition)
+            # Update status variable
+            status.lastWordProcessed = word
+            status.processedDefinitions = processedItems
+            status.save()
+            # Time remaining
+            printTab(1)
+            status.time.updateAndPrint()
+            printTab(1)
+            status.time.printRemainingTime(status.remainingItems())
+
+
 # VARIABLES
 WEBPAGE_BASE = "http://vocabolariocasu.isresardegna.it"
 OUT_FOLDER = "output"
@@ -59,33 +98,11 @@ if status.checkSaved():
         else:
             print("Please enter y or n.")
             answer = None
-print("")
 if load:
     status.load()
 else:
+    print("")
     getDownloadLinks(WEBPAGE_BASE, OUT_FOLDER, status)
 
-
-print("\nDownloading definitions")
-# For every letter
-for i, letter in enumerate(status.jsonWordsReference, start=1):
-    # Parse all the words from json
-    words = getDictFromJSON(letter)
-    # Array of definitions
-    definitions = []
-    # Dict with the definitions associated to the letter
-    wordsDict = {str(letter): definitions}
-    # Number of words
-    numberOfWords = len(words)
-    for j, word in enumerate(words):
-        # Verbose
-        printProgress(i + j, status.numberOfDefinitions, True)
-        print("Working on word " + word)
-        # Get definition
-        definition = getDefinition(WEBPAGE_BASE, words[word])
-        definitions.append(definition)
-        # Time remaining
-        printTab(1)
-        status.time.updateAndPrint()
-        printTab(1)
-        status.time.printRemainingTime(status.numberOfDefinitions - (i + j))
+print("")
+downloadDefinitions(WEBPAGE_BASE, status)
