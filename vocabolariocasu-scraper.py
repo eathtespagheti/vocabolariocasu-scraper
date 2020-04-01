@@ -48,6 +48,7 @@ def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus, startFromLast
     if startFromLastIndex:
         lettersDataset = itertools.islice(
             status.jsonWordsReference, status.lastWordSourceIndex, None)
+        slicedLetters = status.lastWordSourceIndex
     else:
         lettersDataset = status.jsonWordsReference
 
@@ -58,7 +59,7 @@ def downloadDefinitions(WEBPAGE_BASE: str, status: ProgressStatus, startFromLast
         # Number of words
         numberOfWords = len(words)
         # Update status variable
-        status.lastWordSourceIndex = i
+        status.lastWordSourceIndex = i + slicedLetters
         # Adjust start set
         slicedItems = 0
         if startFromLastIndex:
