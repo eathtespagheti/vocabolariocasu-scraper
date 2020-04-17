@@ -2,12 +2,12 @@ from Definition import *
 import requests
 
 
-def getCenter(URL: str):
+def get_center(url: str):
     """
     return the div with the "center" class
     """
     # Make request
-    page = requests.get(URL)
+    page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     # Explore all the items to find the letters links
     html = list(soup.children)[2]
@@ -17,11 +17,11 @@ def getCenter(URL: str):
     return list(content.children)[3]
 
 
-def getLettersLinks(WEBPAGE_BASE: str):
+def get_letters_links(webpage_base: str):
     """
     Find all the letters links in the page
     """
-    center = getCenter(WEBPAGE_BASE)
+    center = get_center(webpage_base)
     ricerca = list(center.children)[1]
     links = {}
     for letter in ricerca.findAll('a'):
@@ -29,11 +29,11 @@ def getLettersLinks(WEBPAGE_BASE: str):
     return links
 
 
-def getWords(WEBPAGE_BASE: str, LetterLink: str):
+def get_words(webpage_base: str, letter_link: str):
     """
     Find all the definitions which starts with a certain letter
     """
-    center = getCenter(WEBPAGE_BASE + LetterLink)
+    center = get_center(webpage_base + letter_link)
     lemmi = list(center.children)[3]
     links = {}
     for word in lemmi.findAll('a'):
@@ -41,13 +41,13 @@ def getWords(WEBPAGE_BASE: str, LetterLink: str):
     return links
 
 
-def getDefinition(WEBPAGE_BASE: str, WordLink: str):
+def get_definition(webpage_base: str, word_link: str):
     """
     Find all the definitions which starts with a certain letter
     """
-    center = getCenter(WEBPAGE_BASE + WordLink)
+    center = get_center(webpage_base + word_link)
     definizioni = list(center.children)[5]
     testo = list(definizioni.children)[2]
     word = Definition(testo)
-    word.parseDefinition()
+    word.parse_definition()
     return word

@@ -6,7 +6,7 @@ class Definition:
     Single dictionary word with definition and examples
     """
     word: str
-    definition: str
+    meaning: str
     raw: element.Tag
 
     def __init__(self, raw: element.Tag):
@@ -14,31 +14,30 @@ class Definition:
         Initialize the Definition with the raw data
         """
         self.raw = raw
-        self.definition = ""
+        self.meaning = ""
 
-    def __parseWord__(self):
+    def __parse_word__(self):
         """
         Parse word field from the raw data
         """
         self.word = self.raw.find('strong').text
 
-    def __parseDefinition__(self):
+    def __parse_definition__(self):
         """
         Parse definition field from the raw data
         """
         for item in list(self.raw.children):
             if type(item) == element.NavigableString:
-                self.definition += str(item)
-            if type(item) == element.Tag:
-                if item.name != 'strong':
-                    self.definition += str(item)
+                self.meaning += str(item)
+            if type(item) == element.Tag and item.name != 'strong':
+                self.meaning += str(item)
 
-    def parseDefinition(self):
+    def parse_definition(self):
         """
         Parse the definition fields from the raw data
         """
-        self.__parseWord__()
-        self.__parseDefinition__()
+        self.__parse_word__()
+        self.__parse_definition__()
 
     def print(self):
         """
@@ -46,13 +45,13 @@ class Definition:
         """
         print(self.word)
 
-    def toDict(self):
+    def to_dict(self):
         """
         Convert the class istance data to a JSONable dict
         """
         data = {
             "word": self.word,
-            "definition": self.definition,
+            "definition": self.meaning,
             "raw": str(self.raw)
         }
         return data
